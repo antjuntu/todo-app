@@ -12,7 +12,7 @@ const dummyTodos = [
     text: 'First test todo'
   },
   {
-    _id: new ObjectID,
+    _id: new ObjectID(),
     text: 'Second test todo'
   }
 ]
@@ -98,6 +98,46 @@ describe('GET /todos/:id', () => {
     const nonValidId = '123'
     request(app)
       .get(`/todos/${nonValidId}`)
+      .expect(404)
+      .end(done)
+  })
+})
+
+describe('DELETE /todos/:id', () => {
+  it('should remove a todo', (done) => {
+    const hexId = dummyTodos[1]._id.toHexString()
+
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(hexId)
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+
+        Todo.findById(hexId).then((todo) => {
+          expect(todo).toNotExist()
+          done()
+        }).catch((err) => done(err))
+      })
+  })
+
+  it('should return 404 if todo not found', (done) => {
+    const hexId = new ObjectID().toHexString()
+
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(404)
+      .end(done)
+  })
+
+  it('should return 404 if object id is invalid', (done) => {
+    const nonValidId = '123'
+    request(app)
+      .delete(`/todos/${nonValidId}`)
       .expect(404)
       .end(done)
   })
