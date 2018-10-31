@@ -1,0 +1,8 @@
+PATCH  http://localhost:3000/todos/5bd9967113eba838ac444654
+Content-Type: application/json
+
+{
+  "text": "Patchia testaamassa 2",
+  "completed": true,
+  "location": "oulu, finland"
+}
